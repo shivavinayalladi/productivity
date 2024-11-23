@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const motivationalMessages = [
   "Take a deep breath and focus on yourself.",
@@ -14,10 +14,54 @@ const DigitalDetox = () => {
   const [isDetoxActive, setIsDetoxActive] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
 
+  // Format time in MM:SS format
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  // Fullscreen mode entry
+  const enterFullScreen = () => {
+    localStorage.setItem("Full","1");
+    const elem = document.documentElement; // Fullscreen root element
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+      elem.mozRequestFullScreen(); // Firefox
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen(); // Chrome, Safari, Opera
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen(); // IE/Edge
+    }
+  };
+  const isFullScreen = () => {
+    if (document.fullscreenElement) {
+      return true; // Document is in fullscreen
+    } else if (document.mozFullScreen) {
+      return true; // Firefox fullscreen check
+    } else if (document.webkitFullscreenElement) {
+      return true; // WebKit browsers (Chrome, Safari) fullscreen check
+    } else if (document.msFullscreenElement) {
+      return true; // IE/Edge fullscreen check
+    }
+    return false; // Document is not in fullscreen
+  };
+  
+
+  // Exit fullscreen mode
+  const exitFullScreen = () => {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen(); // Firefox
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen(); // Chrome, Safari, Opera
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen(); // IE/Edge
+      }
   };
 
   useEffect(() => {
@@ -31,12 +75,15 @@ const DigitalDetox = () => {
       // Update motivational message every 15 seconds
       if (timeLeft % 15 === 0) {
         setCurrentMessage(
-          motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]
+          motivationalMessages[
+            Math.floor(Math.random() * motivationalMessages.length)
+          ]
         );
       }
     } else if (timeLeft === 0 && isDetoxActive) {
       alert("Detox complete! You can now return to your tasks.");
       setIsDetoxActive(false);
+      exitFullScreen();
     }
 
     return () => clearInterval(timer);
@@ -52,12 +99,16 @@ const DigitalDetox = () => {
     setCurrentMessage(
       motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]
     );
+    enterFullScreen(); // Go to fullscreen mode
   };
 
   const handleReset = () => {
     setIsDetoxActive(false);
     setDetoxTime(0);
     setTimeLeft(0);
+    if(isFullScreen()){
+      exitFullScreen(); // Exit fullscreen mode
+    }
   };
 
   return (
@@ -142,12 +193,13 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
     color: "#ecf0f1",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 9999, // Ensure it overlays everything
   },
   motivationalMessage: {
     fontSize: "1.5rem",

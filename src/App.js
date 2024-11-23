@@ -16,6 +16,7 @@ function App() {
         <Sidebar />
         <div style={{ marginLeft: '350px', padding: '20px'}}>
           <Routes>
+            <Route path="/" element={<ScreenTimeTracker/>} />
             <Route path="/screen-time-tracker" element={<ScreenTimeTracker />} />
             <Route path="/pomodoro" element={<Pomodoro />} />
             <Route path="/mindfulness" element={<Mindfulness />} />
